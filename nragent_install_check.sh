@@ -33,7 +33,7 @@ printf "%s\n\n" "$divider$divider$divider"
 
 #Prompt the user for the directory that contains Tomcat
 
-printf "%s\n\n" "Please enter a filename and hit [Enter]."
+printf "%s\n\n" "Please enter a directory name and hit [Enter]."
 
 read _catalina
 
