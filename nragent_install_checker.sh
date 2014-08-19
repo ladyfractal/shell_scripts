@@ -8,22 +8,56 @@
 #      usage: nragent_checker.sh <ticket#>                                         #
 #-----------------------------------------------------------------#
 
-linux_distro=$( lsb_release -a | grep Description | awk '{ print $2 }' )
+#Determine the OS as this will determines syntax of certain commands
 
-opsys=$linux_distro
-
-
-#Declare functions
+baseOS=$( uname -a | awk '{ print $1 }' ) #Check to see if Linux or OS X	
 
 
-GetOS()
+if [  $baseOS = "Darwin" ] ; then
+	opsys="Darwin"
+		else
+			linux_distro=$( lsb_release -a | grep Description | awk '{ print $2 }' )
+			opsys=$linux_distro
+fi
+
+#For ease set the tmpdir to the current working directory since that should be writable.
+
+TmpDir=$PWD
+temp=$( mktemp -d )
+
+
+FileName=$1
+if [ `expr "$FileName" : '.*\.tar'` -eq 0 ]
+then
+	OutFile="${FileName}.tar"
+else
+	OutFile="${FileName}"
+fi
+
+if [  $baseOS = "Darwin" ] ; then
+	opsys="Darwin"
+		else
+			linux_distro=$( lsb_release -a | grep Description | awk '{ print $2 }' )
+			opsys=$linux_distro
+fi
+
+
+#Functions
+
+#Set up printing report to STDOUT
+report()
 
 {
-baseOS=$( uname -a | awk '{ print $1 }' ) #Check to see if Linux or OS X (will do checks for Solaris and HPUX later)
-
-#Once we determine if it is Linux or OSX detemine the flavor of Linux
-
+printf "%s\n" "Here is the current state of your NR Java Agent install" 
+printf "%s\n" "Tomcat started by $cat_user"
+printf "%s\n" "Tomcat's PID is $cat_PID"
+printf "%s\n" "The New Relic Java Agent is located in $agent_jar"
+printf "%s\n" "CATALINA_BASE is currently set to $cat_base"
+printf "%s\n" "CATALINA_HOME is currently set to $cat_home"
+printf "%s\n" "Catalina is using $cat_temp as the temporary file location."
+printf "%s\n" "The agent log files are being written to $agent_log."
 }
+
 
 psOSX()
 
@@ -35,17 +69,11 @@ cat_PID=${cat_startup[9]}    #PID of dispatcher
 agent_jar=$( cut -c 12- <<< ${cat_startup[14]} ) #Location of NR Java agent jar file
 cat_base=$( cut -c 17- <<< ${cat_startup[19]} ) #Directory of $CATALINA_BASE
 cat_home=$( cut -c 17- <<< ${cat_startup[20]} ) #Directory of $CATALINA_HOME
-cat_temp=$( cut -c 17- <<< ${cat_startup[21]} ) #Temp DirectoryService
+cat_temp=$( cut -c 18- <<< ${cat_startup[21]} ) #Temp DirectoryService
 agent_log=$( cut -c 17- <<< ${cat_startup[20]} )/newrelic/logs
 
-printf "%s\n" "Here is the current state of your NR Java Agent install" 
-printf "%s\n" "Tomcat started by $cat_user"
-printf "%s\n" "Tomcat's PID is $cat_PID"
-printf "%s\n" "The New Relic Java Agent is located in $agent_jar"
-printf "%s\n" "CATALINA_BASE is currently set to $cat_base"
-printf "%s\n" "CATALINA_HOME is currently set to $cat_home"
-printf "%s\n" "Catalina is using $cat_temp as the temporary file location."
-printf "%s\n" "The agent log files are being written to $agent_log."
+report
+
 
 }
 
@@ -63,14 +91,7 @@ cat_home=$( cut -c 17- <<< ${cat_startup[19]} ) #Directory of $CATALINA_HOME
 cat_temp=$( cut -c 18- <<< ${cat_startup[20]} ) #Temp DirectoryService
 agent_log=$( cut -c 17- <<< ${cat_startup[19]} )/newrelic/logs
 
-printf "%s\n" "Here is the current state of your NR Java Agent install" 
-printf "%s\n" "Tomcat started by $cat_user"
-printf "%s\n" "Tomcat's PID is $cat_PID"
-printf "%s\n" "The New Relic Java Agent is located in $agent_jar"
-printf "%s\n" "CATALINA_BASE is currently set to $cat_base"
-printf "%s\n" "CATALINA_HOME is currently set to $cat_home"
-printf "%s\n" "Catalina is using $cat_temp as the temporary file location."
-printf "%s\n" "The agent log files are being written to $agent_log."
+report
 
 }
 
@@ -89,14 +110,7 @@ cat_home=$( cut -c 17- <<< ${cat_startup[12]} ) #Directory of $CATALINA_HOME
 cat_temp=$( cut -c 17- <<< ${cat_startup[13]} ) #Temp Directory
 agent_log=$( cut -c 17- <<< ${cat_startup[12]} )/newrelic/logs
 
-printf "%s\n" "Here is the current state of your NR Java Agent install" 
-printf "%s\n" "Tomcat started by $cat_user"
-printf "%s\n" "Tomcat's PID is $cat_PID"
-printf "%s\n" "The New Relic Java Agent is located in $agent_jar"
-printf "%s\n" "CATALINA_BASE is currently set to $cat_base"
-printf "%s\n" "CATALINA_HOME is currently set to $cat_home"
-printf "%s\n" "Catalina is using $cat_temp as the temporary file location."
-printf "%s\n" "The agent log files are being written to $agent_log."
+report
 
 }
 
