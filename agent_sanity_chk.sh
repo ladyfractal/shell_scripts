@@ -5,7 +5,7 @@
 #   Language: Bourne Shell (sh)                                   
 #                                                                 
 # Parameters: ticket#                                                
-#      usage: java_sanity_chk.sh > output.txt                      
+#      usage: agent_sanity_chk.sh > output.txt                      
 #-----------------------------------------------------------------
 
 #Determine the OS as this will determines syntax of certain commands
