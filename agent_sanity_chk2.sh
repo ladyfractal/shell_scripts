@@ -1,12 +1,12 @@
 #!/bin/bash
 #-----------------------------------------------------------------
-#       Name:                                 
+#       Name:        Agent Sanity Checker                         
 #   Function:  Checks NR Java agent install                       
 #   Language: Bourne Shell (sh)                                   
-#                                                                 
-# Parameters: ticket#                                                
+#    Author:  Adrienne Davis (adavis@newrelic.com)                                                                                                         
 #      usage: agent_sanity_chk.sh > output.txt                      
 #-----------------------------------------------------------------
+
 
 #Determine the OS as this will determines syntax of certain commands
 
