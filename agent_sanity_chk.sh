@@ -4,7 +4,8 @@
 #   Function:  Checks NR Java agent install                       
 #   Language: Bourne Shell (sh)                                   
 #    Author:  Adrienne Davis (adavis@newrelic.com)                                                                                                         
-#      usage: agent_sanity_chk.sh                       
+#      usage: agent_sanity_chk.sh 
+# Version 2.0                      
 #-----------------------------------------------------------------
 
 #Setup the banner
@@ -74,6 +75,13 @@ printf "%s\n" "The agent log files are being written to $agent_log."
 
 }
 
+report_generic()
+
+{
+
+printf "%s\n" "Here is what we know:" "${cat_startup[*]}"
+
+}
 
 psOSX()
 
@@ -126,7 +134,7 @@ cat_PID=${cat_startup[1]}    #PID of dispatcher
 agent_jar=$( cut -c 12- <<< ${cat_startup[8]} ) #Location of NR Java agent jar file
 cat_base=$( cut -c 17- <<< ${cat_startup[11]} ) #Directory of $CATALINA_BASE
 cat_home=$( cut -c 17- <<< ${cat_startup[12]} ) #Directory of $CATALINA_HOME
-cat_temp=$( cut -c 17- <<< ${cat_startup[13]} ) #Temp Directory
+cat_temp=$( cut -c 18- <<< ${cat_startup[14]} ) #Temp Directory
 agent_log=$( cut -c 17- <<< ${cat_startup[12]} )/newrelic/logs
 
 report | tee  $tmp_dir/$ticketnum-report.txt
@@ -217,7 +225,11 @@ case "$opsys" in
 	printf "%s\n" "Detected Debian"
 	psFedora
 	;;
-	*)echo  "OS Not Detected"
+	*)echo  "Unable to determine specific Linux distribution. Falling back to unparsed ouput."
+	cat_startup=( $( ps -ef --sort user,pid,command,args | grep -i Bootstrap | grep -v \ grep)) 
+			
+	report _generic | tee  $tmp_dir/$ticketnum-report.txt
+	cp $tmp_dir/$ticketnum-report.txt  $current_dir/$ticketnum
 	;;
 esac
 
